@@ -1,0 +1,4 @@
+filename,capture_type,series,fixed_axis,x_voltage_v,y_voltage_v,exposure_us,timestamp,camera_serial,image_height,image_width,minimum_value,maximum_value
+init_Xn1d100_Yn2d200_2026-08-10T14-39-40.271.tif,initialization,B,x,-1.1,-2.2,91,2026-08-10T14:39:40.271,32335,1080,1440,1,1022
+B_series_x_Xn1d100_Yp1d000_2026-08-10T14-39-45.462.tif,scan_point,B,x,-1.1,1.0,91,2026-08-10T14:39:45.462,32335,1080,1440,1,1022
+B_series_x_Xn1d100_Yp2d000_2026-08-10T14-39-46.433.tif,scan_point,B,x,-1.1,2.0,91,2026-08-10T14:39:46.433,32335,1080,1440,1,1022

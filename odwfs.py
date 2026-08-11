@@ -5,6 +5,7 @@
 # Import packages
 import os
 import glob
+import csv
 import numpy as np
 from pathlib import Path
 from datetime import datetime
@@ -323,101 +324,101 @@ def find_init_pupils(
         figsize=(15, 5),
     )
     
-    axes[0].imshow(
-        image,
-        origin="lower",
-        cmap="gray",
-    )
-    axes[0].set_title("Initialization image")
-    axes[0].axis("off")
-    
-    axes[1].imshow(
-        mask,
-        origin="lower",
-        cmap="gray",
-    )
-    axes[1].set_title("Cleaned binary mask")
-    axes[1].axis("off")
-    
-    axes[2].imshow(
-        image,
-        origin="lower",
-        cmap="gray",
-    )
-    
-    theta = np.linspace(
-        0,
-        2*np.pi,
-        500,
-    )
-    
-    for index, pupil in enumerate(pupils, start=1):
-    
-        xc, yc = pupil["center"]
-        radius = pupil["radius"]
-    
-        # Pupil aperture
-        aperture = CircularAperture(
-            (xc, yc),
-            r=radius,
+        axes[0].imshow(
+            image,
+            origin="lower",
+            cmap="gray",
         )
-    
-        aperture.plot(
-            ax=axes[2],
-            color="red",
-            lw=1,
+        axes[0].set_title("Initialization image")
+        axes[0].axis("off")
+
+        axes[1].imshow(
+            mask,
+            origin="lower",
+            cmap="gray",
         )
-    
-        # Annulus (used for drift monitoring)
-        annulus = CircularAnnulus(
-            (xc, yc),
-            r_in=radius + annulus_inner_offset,
-            r_out=radius + annulus_outer_offset,
+        axes[1].set_title("Cleaned binary mask")
+        axes[1].axis("off")
+
+        axes[2].imshow(
+            image,
+            origin="lower",
+            cmap="gray",
         )
-            
-        annulus.plot(
-            ax=axes[2],
-            color="cyan",
-            lw=1,
+
+        theta = np.linspace(
+            0,
+            2*np.pi,
+            500,
         )
-    
-        axes[2].plot(
-            xc,
-            yc,
-            "+",
-            color="yellow",
-            markersize=12,
-            markeredgewidth=2,
+
+        for index, pupil in enumerate(pupils, start=1):
+
+            xc, yc = pupil["center"]
+            radius = pupil["radius"]
+
+            # Pupil aperture
+            aperture = CircularAperture(
+                (xc, yc),
+                r=radius,
+            )
+
+            aperture.plot(
+                ax=axes[2],
+                color="red",
+                lw=1,
+            )
+
+            # Annulus (used for drift monitoring)
+            annulus = CircularAnnulus(
+                (xc, yc),
+                r_in=radius + annulus_inner_offset,
+                r_out=radius + annulus_outer_offset,
+            )
+
+            annulus.plot(
+                ax=axes[2],
+                color="cyan",
+                lw=1,
+            )
+
+            axes[2].plot(
+                xc,
+                yc,
+                "+",
+                color="yellow",
+                markersize=12,
+                markeredgewidth=2,
+            )
+
+            axes[2].text(
+                xc,
+                yc + radius + 15,
+                str(index),
+                color="white",
+                ha="center",
+                fontsize=10,
+            )
+
+        axes[2].set_title(
+            f"Pupil apertures (red)\n"
+            f"Annulus: r+{annulus_inner_offset} to r+{annulus_outer_offset} px (cyan)"
         )
-    
         axes[2].text(
-            xc,
-            yc + radius + 15,
-            str(index),
+            0.02,
+            0.98,
+            f"Annulus:\n"
+            f"Inner = r + {annulus_inner_offset}px\n"
+            f"Outer = r + {annulus_outer_offset}px",
+            transform=axes[2].transAxes,
+            va="top",
             color="white",
-            ha="center",
-            fontsize=10,
+            bbox=dict(facecolor="black", alpha=0.6),
         )
-    
-    axes[2].set_title(
-        f"Pupil apertures (red)\n"
-        f"Annulus: r+{annulus_inner_offset} to r+{annulus_outer_offset} px (cyan)"
-    )
-    axes[2].text(
-        0.02,
-        0.98,
-        f"Annulus:\n"
-        f"Inner = r + {annulus_inner_offset}px\n"
-        f"Outer = r + {annulus_outer_offset}px",
-        transform=axes[2].transAxes,
-        va="top",
-        color="white",
-        bbox=dict(facecolor="black", alpha=0.6),
-    )
-    axes[2].axis("off")
-    
-    plt.tight_layout()
-    plt.show()
+        axes[2].axis("off")
+
+        plt.tight_layout()
+        plt.show()
 
     print(f"Found {len(pupils)} pupils:")
 
@@ -473,6 +474,138 @@ def annulus_flux(image, pupil):
 
     return float(
         photometry["aperture_sum"][0]
+    )
+
+def measure_recorded_series(
+    directory,
+    init,
+    flux_function=pupil_flux,
+    flip_vertical=True,
+):
+    """
+    Measure pupil flux using scan points recorded in metadata.csv.
+
+    Returns
+    -------
+    voltage : ndarray
+        Scanned-axis voltages, sorted from low to high.
+
+    flux : ndarray
+        Integrated intensity with shape
+        (number of scan points, number of pupils).
+
+    fixed_voltage : float
+        Voltage held constant during the scan.
+
+    series : str
+        Either "B" or "T".
+
+    fixed_axis : str
+        Either "x" or "y".
+    """
+    directory = Path(directory)
+    metadata_path = directory / "metadata.csv"
+
+    if not metadata_path.exists():
+        raise FileNotFoundError(
+            f"Metadata file does not exist: {metadata_path}"
+        )
+
+    with metadata_path.open(
+        "r",
+        newline="",
+        encoding="utf-8",
+    ) as file:
+        records = [
+            row
+            for row in csv.DictReader(file)
+            if row["capture_type"] == "scan_point"
+        ]
+
+    if not records:
+        raise RuntimeError(
+            f"No scan points were recorded in {metadata_path}"
+        )
+
+    series_values = {
+        row["series"] for row in records
+    }
+    fixed_axes = {
+        row["fixed_axis"] for row in records
+    }
+
+    if len(series_values) != 1:
+        raise ValueError(
+            "Metadata contains more than one series."
+        )
+
+    if len(fixed_axes) != 1:
+        raise ValueError(
+            "Metadata contains more than one fixed axis."
+        )
+
+    series = next(iter(series_values))
+    fixed_axis = next(iter(fixed_axes))
+
+    pupils = init["pupils"]
+    voltage = np.zeros(len(records), dtype=float)
+    flux = np.zeros(
+        (len(records), len(pupils)),
+        dtype=float,
+    )
+
+    fixed_values = []
+
+    for image_index, record in enumerate(records):
+        x_voltage = float(record["x_voltage_v"])
+        y_voltage = float(record["y_voltage_v"])
+
+        if fixed_axis == "x":
+            fixed_values.append(x_voltage)
+            voltage[image_index] = y_voltage
+        else:
+            fixed_values.append(y_voltage)
+            voltage[image_index] = x_voltage
+
+        image_path = directory / record["filename"]
+
+        if not image_path.exists():
+            raise FileNotFoundError(
+                f"Recorded image is missing: {image_path}"
+            )
+
+        image = plt.imread(image_path)
+
+        if flip_vertical:
+            image = np.flipud(image)
+
+        for pupil_index, pupil in enumerate(pupils):
+            flux[image_index, pupil_index] = (
+                flux_function(image, pupil)
+            )
+
+    fixed_values = np.asarray(
+        fixed_values,
+        dtype=float,
+    )
+
+    if not np.allclose(
+        fixed_values,
+        fixed_values[0],
+        atol=1e-9,
+    ):
+        raise ValueError(
+            "The supposedly fixed voltage changed within the scan."
+        )
+
+    order = np.argsort(voltage)
+
+    return (
+        voltage[order],
+        flux[order],
+        float(fixed_values[0]),
+        series,
+        fixed_axis,
     )
 
 def measure_series(
@@ -588,6 +721,8 @@ def plot_intensity(
     fixed_voltage,
     ylabel="Integrated intensity",
     title_prefix="Pupil",
+    output_path=None,
+    show=True,
 ):
     """
     Plot the intensity of every pupil as a function of scan voltage.
@@ -632,7 +767,7 @@ def plot_intensity(
             "measurement must be 'x' or 'y'"
         )
 
-    plt.figure(figsize=(7,5))
+    fig = plt.figure(figsize=(7, 5))
 
     markers = ["o", "s", "^", "d", "v", "*"]
 
@@ -654,7 +789,20 @@ def plot_intensity(
     plt.legend()
 
     plt.tight_layout()
-    plt.show()
+
+    if output_path is not None:
+        fig.savefig(
+            output_path,
+            dpi=150,
+            bbox_inches="tight",
+        )
+
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+
+    return fig
 
 def directional_annulus_flux(
     image,
