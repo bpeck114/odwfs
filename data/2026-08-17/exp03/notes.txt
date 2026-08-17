@@ -1,0 +1,7 @@
+Experiment type: rotation
+X voltage: -1.221000 V
+Y voltage: 0.220000 V
+Last saved: 2026-08-17T13:05:46
+
+Notes:
+first experiment with rotating hwp, ended at 80 degrees

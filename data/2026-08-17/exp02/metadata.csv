@@ -1,0 +1,4 @@
+filename,capture_type,experiment_type,series,fixed_axis,x_voltage_v,y_voltage_v,rotation_degrees,exposure_us,timestamp,camera_serial,image_height,image_width,minimum_value,maximum_value
+init_Xp1d000_Yp1d000_2026-08-17T12-50-31.029.tif,initialization,rotation,,,1.0,1.0,,91,2026-08-17T12:50:31.029,32335,1080,1440,1,1022
+rotation_Dp1d000_Xp1d000_Yp1d000_2026-08-17T12-50-34.478.tif,scan_point,rotation,,,1.0,1.0,1.0,91,2026-08-17T12:50:34.478,32335,1080,1440,1,1022
+rotation_Dp2d000_Xp1d000_Yp1d000_2026-08-17T12-50-36.863.tif,scan_point,rotation,,,1.0,1.0,2.0,91,2026-08-17T12:50:36.863,32335,1080,1440,1,1022

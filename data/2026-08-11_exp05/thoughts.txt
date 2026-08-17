@@ -1,0 +1,2 @@
+Top = x-sensitive
+Bottom = y-sensitive
