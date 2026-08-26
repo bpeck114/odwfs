@@ -1,0 +1,2 @@
+filename,capture_type,experiment_type,series,fixed_axis,x_voltage_v,y_voltage_v,rotation_degrees,exposure_us,timestamp,camera_serial,image_height,image_width,minimum_value,maximum_value
+init_Xn1d177_Yp0d176_2026-08-18T14-24-54.613.tif,initialization,translation,B,x,-1.177,0.1764,,91,2026-08-18T14:24:54.613,32335,1080,1440,1,1022

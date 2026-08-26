@@ -1,0 +1,7 @@
+Experiment type: rotation
+X voltage: -1.219000 V
+Y voltage: 0.176000 V
+Last saved: 2026-08-18T14:24:06
+
+Notes:
+test

@@ -1,0 +1,8 @@
+filename,capture_type,experiment_type,series,fixed_axis,x_voltage_v,y_voltage_v,rotation_degrees,exposure_us,timestamp,camera_serial,image_height,image_width,minimum_value,maximum_value
+init_Xn1d177_Yp0d176_2026-08-18T14-29-38.732.tif,initialization,rotation,,,-1.177,0.1763,,91,2026-08-18T14:29:38.732,32335,1080,1440,1,1022
+rotation_Dp0d000_Xn1d177_Yp0d176_2026-08-18T14-30-16.215.tif,scan_point,rotation,,,-1.177,0.1763,0.0,91,2026-08-18T14:30:16.215,32335,1080,1440,1,1022
+rotation_Dp80d000_Xn1d177_Yp0d176_2026-08-18T14-31-16.775.tif,scan_point,rotation,,,-1.177,0.1763,80.0,91,2026-08-18T14:31:16.775,32335,1080,1440,1,1022
+rotation_Dp160d000_Xn1d177_Yp0d176_2026-08-18T14-31-36.528.tif,scan_point,rotation,,,-1.177,0.1763,160.0,91,2026-08-18T14:31:36.528,32335,1080,1440,1,1022
+rotation_Dp240d000_Xn1d177_Yp0d176_2026-08-18T14-32-02.383.tif,scan_point,rotation,,,-1.177,0.1763,240.0,91,2026-08-18T14:32:02.383,32335,1080,1440,1,1022
+rotation_Dp320d000_Xn1d177_Yp0d176_2026-08-18T14-32-28.714.tif,scan_point,rotation,,,-1.177,0.1763,320.0,91,2026-08-18T14:32:28.714,32335,1080,1440,1,1022
+rotation_Dp360d000_Xn1d177_Yp0d176_2026-08-18T14-32-41.853.tif,scan_point,rotation,,,-1.177,0.1763,360.0,91,2026-08-18T14:32:41.853,32335,1080,1440,1,1022

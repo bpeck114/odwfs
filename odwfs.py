@@ -781,6 +781,16 @@ def plot_intensity(
             label=f"Pupil {i+1}",
         )
 
+    plt.plot(
+        voltage,
+        flux.sum(axis=1),
+        marker="X",
+        linestyle="--",
+        linewidth=2.5,
+        color="black",
+        label="Sum of all pupils",
+    )
+
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)

@@ -155,6 +155,7 @@ def save_intensity_results(
         f"pupil_{index}_intensity"
         for index in range(1, flux.shape[1] + 1)
     )
+    fieldnames.append("summed_intensity")
 
     with output_path.open(
         "w",
@@ -180,6 +181,7 @@ def save_intensity_results(
                     f"pupil_{pupil_index + 1}_intensity"
                 ] = flux[row_index, pupil_index]
 
+            row["summed_intensity"] = float(flux[row_index].sum())
             writer.writerow(row)
 
 
@@ -236,6 +238,7 @@ def save_rotation_results(output_path, angles, flux, x_voltage, y_voltage):
         f"pupil_{index}_intensity"
         for index in range(1, flux.shape[1] + 1)
     ]
+    fieldnames.append("summed_intensity")
 
     with output_path.open("w", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
@@ -251,6 +254,7 @@ def save_rotation_results(output_path, angles, flux, x_voltage, y_voltage):
                 row[f"pupil_{pupil_index + 1}_intensity"] = (
                     flux[row_index, pupil_index]
                 )
+            row["summed_intensity"] = float(flux[row_index].sum())
             writer.writerow(row)
 
 
@@ -272,6 +276,16 @@ def plot_rotation_intensity(
             linewidth=2,
             label=f"Pupil {pupil_index + 1}",
         )
+
+    ax.plot(
+        angles,
+        flux.sum(axis=1),
+        marker="X",
+        linestyle="--",
+        linewidth=2.5,
+        color="black",
+        label="Sum of all pupils",
+    )
 
     ax.set_xlabel("Rotation angle (degrees)")
     ax.set_ylabel("Integrated pupil intensity")
@@ -1362,9 +1376,9 @@ class AcquisitionApp(tk.Tk):
             )
             return
 
-        if self.scan_point_count < 2:
+        if self.scan_point_count < 1:
             self.status.config(
-                text="Capture at least two scan points before finishing."
+                text="Capture at least one scan point before finishing."
             )
             return
 

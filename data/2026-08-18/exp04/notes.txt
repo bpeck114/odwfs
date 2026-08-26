@@ -1,0 +1,9 @@
+Experiment type: translation
+X voltage: -1.177000 V
+Y voltage: 0.176400 V
+Series: B
+Fixed axis: x
+Last saved: 2026-08-18T14:25:02
+
+Notes:
+mistake
